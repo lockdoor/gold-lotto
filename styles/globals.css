@@ -19,3 +19,7 @@ body {
 .submit-btn {
   @apply w-full bg-green-300 py-3 rounded-lg text-gray-400 hover:bg-green-500 hover:text-white
 }
+
+.nav-item {
+  @apply mx-5 text-white hover:text-gray-400 hover:underline cursor-pointer
+}

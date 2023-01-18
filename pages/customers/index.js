@@ -1,7 +1,10 @@
-import React from 'react'
+import React from "react";
+import Layout from "@/components/layout";
 
 export default function CustomersIndex() {
   return (
-    <div>CustomersIndex</div>
-  )
+    <Layout page={"customers"}>
+      <div>CustomersIndex</div>
+    </Layout>
+  );
 }
