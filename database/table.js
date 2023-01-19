@@ -1,5 +1,8 @@
 import connectDB from "./connectDB";
+import Customer from "@/model/customer";
 import Table from "@/model/table";
+import mongoose from "mongoose";
+import { rewrites } from "@/next.config";
 
 export async function postTable(req, res){
   try{
@@ -41,9 +44,73 @@ export async function getTable(req, res){
     const {tableId} = req.query
     await connectDB()
     const table = await Table.findById(tableId)
+      .populate({
+        path: "tableNumber",
+        populate: {path: 'customer'}
+    })
     res.status(200).json(table)
   }
   catch(error){
+    res.status(400).json(error)
+  }
+}
+
+export async function putNumber(req, res){
+  console.log(req.body)
+  try{
+    const {tableId, numberId, customer} = req.body
+    console.log(req.body)
+    await connectDB()
+    const customerId = mongoose.Types.ObjectId.isValid(customer)
+      ? customer
+      : await Customer.create({customerName: customer}).then(res=>res._id)
+    console.log(customerId)
+    const result = await Table.updateOne(
+      {_id: tableId, 'tableNumber._id': numberId},
+      {"$set":{"tableNumber.$.customer": customerId}}
+    )
+    res.status(201).json({message: 'create success'})
+  }
+  catch(error){
+    res.status(400).json(error)
+  }
+}
+
+export async function putNumberRemoveCustomer(req, res){
+  console.log(req.body)
+  try{
+    const {tableId, numbers, customerId} = req.body
+    const result = await Table.update(
+      {},
+      {$unset: {"tableNumber.$[tableNumber].customer": 1}},
+      {arrayFilters: [{"tableNumber._id": {$in: numbers}}]}
+    )
+    
+    console.log(result)
+    res.status(201).json({message: 'update success'})
+  }
+  catch(error){
+    console.log(error)
+    res.status(400).json(error)
+  }
+}
+
+export async function putNumberPayment(req, res){
+  console.log(req.body)
+  try{
+    const {numbers, paymentStatus} = req.body
+    
+    const result = await Table.update(
+      {},
+      {$set: {"tableNumber.$[tableNumber].payment": !paymentStatus}},
+      {arrayFilters: [{"tableNumber._id": {$in: numbers}}]}
+    )
+    
+    console.log(result)
+    res.status(201).json({message: 'update success'})
+  }
+  catch(error){
+    console.log(error)
     res.status(400).json(error)
   }
 }

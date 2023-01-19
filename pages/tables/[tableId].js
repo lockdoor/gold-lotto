@@ -4,6 +4,7 @@ import { getTable } from '@/clientRequest/tables'
 import Layout from '@/components/layout'
 import { formatDate } from '@/lib/helper'
 import TableNumber from '@/components/tableNumber'
+import TableCustomer from '@/components/tableCustomer'
 export default function Table({tableId}) {
 
   const {isLoading, isError, data, error} = useQuery(['getTable', tableId], getTable)
@@ -18,6 +19,7 @@ export default function Table({tableId}) {
         <div className='text-center'>{data.tablePrice}</div>
         <div className='text-center'>{formatDate(data.tableDate)}</div>
         <TableNumber data={data} />
+        <TableCustomer data={data} />
       </main>
     </Layout>
     
