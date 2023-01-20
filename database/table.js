@@ -2,7 +2,6 @@ import connectDB from "./connectDB";
 import Customer from "@/model/customer";
 import Table from "@/model/table";
 import mongoose from "mongoose";
-import { rewrites } from "@/next.config";
 
 export async function postTable(req, res){
   try{
@@ -80,12 +79,12 @@ export async function putNumberRemoveCustomer(req, res){
   console.log(req.body)
   try{
     const {tableId, numbers, customerId} = req.body
+    await connectDB()
     const result = await Table.update(
       {},
       {$unset: {"tableNumber.$[tableNumber].customer": 1}},
       {arrayFilters: [{"tableNumber._id": {$in: numbers}}]}
-    )
-    
+    )   
     console.log(result)
     res.status(201).json({message: 'update success'})
   }
@@ -99,15 +98,51 @@ export async function putNumberPayment(req, res){
   console.log(req.body)
   try{
     const {numbers, paymentStatus} = req.body
-    
+    await connectDB()
     const result = await Table.update(
       {},
       {$set: {"tableNumber.$[tableNumber].payment": !paymentStatus}},
       {arrayFilters: [{"tableNumber._id": {$in: numbers}}]}
     )
-    
     console.log(result)
     res.status(201).json({message: 'update success'})
+  }
+  catch(error){
+    console.log(error)
+    res.status(400).json(error)
+  }
+}
+
+export async function putSettingTable(req, res){
+  // console.log(req.query)
+  console.log(req.body)
+  try{
+    const {tableId} = req.body
+    await connectDB()
+    const key = Object.keys(req.body)[0]
+    const obj = {}
+    obj[key] = req.body[key]
+    // console.log(obj)
+    const result = await Table.updateOne(
+      {_id: tableId}, obj
+    )
+    console.log(result)
+    res.status(201).json({message: 'update success'})
+  }
+  catch(error){
+    console.log(error)
+    res.status(400).json(error)
+  }
+}
+
+export async function deleteSettingTable(req, res){
+  try{
+    const {tableId} = req.query  
+    console.log('deleteSettingTable is ', tableId)
+    const result = await Table.deleteOne(
+      {_id: tableId}
+    )
+    res.status(201).json({message: 'delete success'})
   }
   catch(error){
     console.log(error)

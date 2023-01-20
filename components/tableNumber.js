@@ -6,6 +6,7 @@ export default function TableNumber({ data }) {
   const [showModal, setShowModal] = useState(false);
   const [number, setNumber] = useState(null);
   const onClickSelectNumber = (num) => {
+    if(!data.tableIsOpen) return
     setNumber(num);
     setShowModal(true);
   };
@@ -19,7 +20,7 @@ export default function TableNumber({ data }) {
           onClick={() => onClickSelectNumber(num)}
           className="border border-pink-400 aspect-square flex justify-center items-center text-green-500 cursor-pointer"
         >
-          {num.customer ? <span className=" text-red-700">R</span> : <span>{num.number}</span>}
+          {num.customer ? <span className=" text-red-700">{data.tableEmoji}</span> : <span>{num.number}</span>}
           
         </div>
       ))}

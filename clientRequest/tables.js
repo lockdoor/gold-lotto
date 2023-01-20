@@ -25,3 +25,23 @@ export async function postTable(payload) {
     .catch((error) => error.response.data);
   return result;
 }
+
+export async function putSettingTable(payload){
+  const {tableId, } = payload
+  console.log(payload)
+  const result = await axios
+    .put(`${BASE_URL}/${tableId}`, payload)
+    .then((res) => res.data)
+    .catch((error) => error.response.data);
+  return result;
+}
+
+export async function deleteSettingTable(payload){
+  const {tableId, } = payload
+  console.log(payload)
+  const result = await axios
+    .delete(`${BASE_URL}/${tableId}`, {data: payload})
+    .then((res) => res.data)
+    .catch((error) => error.response.data);
+  return result;
+}

@@ -6,6 +6,7 @@ import { AiOutlineRollback } from "react-icons/ai";
 import { useQueryClient, useMutation } from "react-query";
 import { putNumberRemoveCustomer, putNumberPayment } from "@/clientRequest/numberTable";
 import { getTable } from "@/clientRequest/tables";
+
 export default function TableCustomer({ data }) {
   // console.log(data)
   const [tableCustomer, setTableCustomer] = useState([]);
@@ -45,7 +46,7 @@ export default function TableCustomer({ data }) {
   return (
     <div className="my-5">
       {tableCustomer.map((e, i) => (
-        <Card key={i} customer={e} tableId={data._id}/>
+        <Card key={i} customer={e} tableId={data._id} tableIsOpen={data.tableIsOpen}/>
       ))}
     </div>
   );
@@ -71,9 +72,8 @@ function useOutsideAlerter(ref, setEdit) {
   }, [ref]);
 }
 
-const Card = ({ customer, tableId }) => {
+const Card = ({ customer, tableId, tableIsOpen }) => {
   // console.log(customer)
-  // console.log('customer.number[0].payment ', customer.number[0].payment)
   const [edit, setEdit] = useState(false);
   const [selectNumber, setSelectNumber] = useState([]);
   const queryClient = useQueryClient()
@@ -107,6 +107,7 @@ const Card = ({ customer, tableId }) => {
   };
 
   const onClickEdit = () => {
+    if(!tableIsOpen) return
     setEdit(true)
   }
   const onClickCancel = () => {

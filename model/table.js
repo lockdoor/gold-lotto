@@ -10,7 +10,8 @@ const tableSchema = new Schema({
   tableDetail: {type: String, required: true},
   tablePrice: {type: Number, required: true},
   tableNumber: [numberSchema],
-  // tableEmoji:
+  tableEmoji: {type: String, required: true, default: "🍎"},
+  tableIsOpen: {type: Boolean, required: true, default: true}
 })
 const Table = models.Table || new model("Table", tableSchema)
 export default Table
