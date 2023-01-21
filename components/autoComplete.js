@@ -84,7 +84,7 @@ export default function AutoComplete({number, tableId, setShowModal}) {
         <div className=' cursor-pointer text-start p-2 border border-gray-300 rounded-lg shadow-lg'
           onClick={updateNumberNewCustomer}
         >
-          เพิ่ม "{inputValue}"
+          <span>เพิ่ม<q>{inputValue}</q></span>
         </div>
       )}
       {

@@ -68,7 +68,7 @@ export default function CustomersIndex() {
             </div>
             <div 
               onClick={()=>onClickPayment(customer)}
-              className={`w-2/12 flex items-center justify-center border-l border-pink-300 ${customer.tables[0].numbers[0].payment ? 'text-green-500' : 'text-red-500'} cursor-pointer`}>
+              className={`w-2/12 flex items-center justify-center border-l border-pink-300 ${customer.tables[0]?.numbers[0].payment ? 'text-green-500' : 'text-red-500'} cursor-pointer`}>
               {customer.tables.reduce((a, b) => a + (b._id.tablePrice * b.numbers.length), 0)}
             </div>
           </div>
