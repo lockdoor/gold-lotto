@@ -92,7 +92,7 @@ export default function Table({ tableId }) {
   // console.log(data)
   return (
     <Layout page={"tables"}>
-      <div class="flex justify-center"></div>
+      <div className="flex justify-center"></div>
       <main className="mt-5">
         <div
           className="text-center text-2xl cursor-pointer"
