@@ -1,10 +1,15 @@
 import React, { useState } from "react";
 import { useQuery, useQueryClient, useMutation } from "react-query";
-import { getTable, putSettingTable, deleteSettingTable } from "@/clientRequest/tables";
+import {
+  getTable,
+  putSettingTable,
+  deleteSettingTable,
+} from "@/clientRequest/tables";
 import Layout from "@/components/layout";
 import { formatDate } from "@/lib/helper";
 import TableNumber from "@/components/tableNumber";
 import TableCustomer from "@/components/tableCustomer";
+import TableNumbersCustomers from "@/components/tableNumbersCustomers";
 import Drawer from "react-modern-drawer";
 import Modal from "@/components/modal";
 import EmojiPicker from "emoji-picker-react";
@@ -12,8 +17,11 @@ import "react-modern-drawer/dist/index.css";
 import { useRouter } from "next/router";
 
 export default function Table({ tableId }) {
-  const rounter = useRouter()
+  const rounter = useRouter();
   const [drawerState, setDrawerState] = useState(false);
+  const [showTableCustomer, setShowTableCustomer] = useState(true);
+  const [countCustomer, setCountCustomer] = useState(0)
+  const [countNumber, setCountNumber] = useState(0)
   const [showModalSettingTableName, setShowModalSettingTableName] =
     useState(false);
   const [showModalSettingTableDetail, setShowModalSettingTableDetail] =
@@ -37,7 +45,7 @@ export default function Table({ tableId }) {
   });
   const deleteSettingTableMutation = useMutation(deleteSettingTable, {
     onSuccess: (response) => {
-      rounter.replace('/tables')
+      rounter.replace("/tables");
     },
   });
   const { isLoading, isError, data, error } = useQuery(
@@ -67,14 +75,14 @@ export default function Table({ tableId }) {
   const onClickSettingTableIsOpen = () => {
     const payload = {
       tableIsOpen: !data.tableIsOpen,
-      tableId: data._id
-    }
-    putSettingTableMutation.mutate(payload)
+      tableId: data._id,
+    };
+    putSettingTableMutation.mutate(payload);
   };
   const onClickSettingTableDelete = () => {
-    if(data.tableIsOpen) return
-    deleteSettingTableMutation.mutate({tableId})
-  }
+    if (data.tableIsOpen) return;
+    deleteSettingTableMutation.mutate({ tableId });
+  };
   const onClickSubmitSetting = (obj) => {
     const key = Object.keys(obj)[0];
     console.log(key);
@@ -101,10 +109,26 @@ export default function Table({ tableId }) {
           {data.tableName}
         </div>
         <div className="text-center">{data.tableDetail}</div>
-        <div className="text-center">{data.tablePrice}</div>
+        <div className="text-center">ราคา {data.tablePrice}</div>
         <div className="text-center">{formatDate(data.tableDate)}</div>
         <TableNumber data={data} />
-        <TableCustomer data={data} />
+        {showTableCustomer ? (
+          <button 
+            className="block mx-auto my-5 bg-green-400 text-white px-8 py-2 rounded-lg shadow-md shadow-green-300"
+            onClick={() => setShowTableCustomer(!showTableCustomer)}>
+            <div>รายการตามลูกค้า</div>
+            <div>ลูกค้าซื้อ {countCustomer} คน</div>
+          </button>
+        ) : (
+          <button 
+          className="block mx-auto my-5 bg-pink-400 text-white px-8 py-2 rounded-lg shadow-md shadow-pink-300"
+            onClick={() => setShowTableCustomer(!showTableCustomer)}>
+            <div>รายการตามตัวเลข</div>
+            <div>ลูกค้าซื้อ {countNumber} เลข</div>
+          </button>
+        )}
+        {showTableCustomer && <TableCustomer data={data} setCountCustomer={setCountCustomer}/>}
+        {!showTableCustomer && <TableNumbersCustomers data={data} setCountNumber={setCountNumber}/>}
       </main>
       <Drawer
         open={drawerState}
@@ -135,19 +159,31 @@ export default function Table({ tableId }) {
             งวยหวย
           </div>
           <div
-            className="setting-table-item"
+            className="setting-table-item flex justify-between"
             onClick={onClickSettingTableEmoji}
           >
-            อิโมจิ
+            <div>อิโมจิ</div>
+            <div>{data.tableEmoji}</div>
           </div>
           <div className="setting-table-item flex justify-between">
             {data.tableIsOpen ? <span>เปิดตาราง</span> : <span>ปิดตาราง</span>}
             <label className="relative inline-flex items-center cursor-pointer">
-              <input type="checkbox" value="" checked={data.tableIsOpen} className="sr-only peer" onChange={onClickSettingTableIsOpen}/>
+              <input
+                type="checkbox"
+                value=""
+                checked={data.tableIsOpen}
+                className="sr-only peer"
+                onChange={onClickSettingTableIsOpen}
+              />
               <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
             </label>
           </div>
-          <div className="setting-table-item" onClick={onClickSettingTableDelete}>ลบตาราง</div>
+          <div
+            className="setting-table-item"
+            onClick={onClickSettingTableDelete}
+          >
+            ลบตาราง
+          </div>
         </div>
       </Drawer>
       <Modal

@@ -17,3 +17,18 @@ export async function getCustomersTables(){
   return result;
 }
 
+export async function putCustomerName(payload){
+  const result = await axios
+    .put(`${BASE_URL}`, payload)
+    .then((res) => res.data)
+    .catch((error) => error.response.data);
+  return result;
+}
+
+export async function deleteCustomer(payload){
+  const result = await axios
+    .delete(`${BASE_URL}`, {data: payload})
+    .then((res) => res.data)
+    .catch((error) => error.response.data);
+  return result;
+}

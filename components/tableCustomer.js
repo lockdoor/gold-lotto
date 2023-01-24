@@ -2,50 +2,72 @@ import React, { useEffect, useState, useRef } from "react";
 import { BsTrash } from "react-icons/bs";
 import { TbCurrencyBaht } from "react-icons/tb";
 import { CiEdit } from "react-icons/ci";
-import { AiOutlineRollback } from "react-icons/ai";
+import { AiOutlineConsoleSql, AiOutlineRollback } from "react-icons/ai";
 import { useQueryClient, useMutation } from "react-query";
 import { putNumberRemoveCustomer, putNumberPayment } from "@/clientRequest/numberTable";
 import { getTable } from "@/clientRequest/tables";
 
-export default function TableCustomer({ data }) {
+export default function TableCustomer({ data, setCountCustomer }) {
   // console.log(data)
   const [tableCustomer, setTableCustomer] = useState([]);
 
   const makeTableCustomer = () => {
-    const { tableNumber, _id } = data;
-    let reserve = tableNumber.filter((n) => n.customer);
-    reserve = reserve.map((n) => ({
-      customerId: n.customer._id,
-      customerName: n.customer.customerName,
-      number: n.number,
-      numberId: n._id,
-      payment: n.payment,
-      tableId: _id
-    }));
+    const { tableNumbers, _id } = data;
+    let reserve = tableNumbers.filter((n) => n.customers.length > 0);
+    // console.log(reserve)
+    
     // 1. หารายชื่อลูกค้าทั้งหมด
-    let customers = reserve.map((e) => e.customerId);
+    let customers = []
+    for (const number of reserve){
+      for (const customerss of number.customers){
+        customers.push(customerss.customer._id)
+      }
+    }
+    
     // 2. สร้าง set customers
     customers = new Set(customers);
+    setCountCustomer(customers.size)
+    // console.log(customers.size)
+
     // 3. ใช้ customer loop หาตัวเลข
     let result = [];
     for (const customer of customers) {
-      const number = reserve.filter((num) => num.customerId === customer);
+      let numbers = []
+      for(const numberss of reserve){
+             
+        for (const c of numberss.customers){
+          if(c.customer._id === customer){
+            let obj = {}   
+            obj.number = numberss.number
+            obj.customerName = c.customer.customerName,
+            obj.paymentId = c._id
+            obj.payment = c.payment
+            numbers.push(obj)
+          }
+        }
+      }
+
       result.push({
         customerId: customer,
-        customerName: number[0].customerName,
-        number,
-      });
+        numbers,
+        customerName: numbers[0].customerName,
+      })
     }
+
+    result.sort((a, b) => b.numbers.length - a.numbers.length)
+    // console.log(result)
     return result;
   };
 
   useEffect(() => {
     setTableCustomer(makeTableCustomer());
+    // makeTableCustomer()
   }, [data]);
 
   return (
     <div className="my-5">
       {tableCustomer.map((e, i) => (
+        // <div key={i}>{e.customerName}</div>
         <Card key={i} customer={e} tableId={data._id} tableIsOpen={data.tableIsOpen}/>
       ))}
     </div>
@@ -95,43 +117,46 @@ const Card = ({ customer, tableId, tableIsOpen }) => {
   const wrapperRef = useRef(null);
   useOutsideAlerter(wrapperRef, setEdit);
 
-  const onChangeCheckbox = (number, e) => {
-    if (e.target.checked) {
-      setSelectNumber(prev => ([...prev, number]))
-    } else {
-      setSelectNumber(prev => {
-        const arr = prev.filter(n => n.numberId !== number.numberId)
-        return arr
-      })
-    }
-  };
-
   const onClickEdit = () => {
     if(!tableIsOpen) return
     setEdit(true)
+    // console.log(customer)
   }
   const onClickCancel = () => {
     setEdit(false)
     setSelectNumber([])
   }
 
+  const onChangeCheckbox = (number, e) => {
+    // console.log(number)
+    if (e.target.checked) {
+      setSelectNumber(prev => ([...prev, number]))
+    } else {
+      setSelectNumber(prev => {
+        const arr = prev.filter(n => n.paymentId !== number.paymentId)
+        return arr
+      })
+    }
+  };
+
   const onClickDelete = () => {
     if(selectNumber.length === 0) return
     const payload = {
       tableId,
       customerId: customer.customerId,
-      numbers: selectNumber.map(n=> n.numberId)
+      numbers: selectNumber.map(n=> n.paymentId)
     }
     deleteMution.mutate(payload)
     // console.log(payload)
   }
 
-  const onClickPayment = () => {
-    const payload = {
-      paymentStatus: customer.number[0].payment,
-      numbers: customer.number.map(num=>num.numberId)}
-    paymentMutation.mutate(payload)
-  }
+  // const onClickPayment = () => {
+  //   console.log(customer.numbers)
+  //   const payload = {
+  //     paymentStatus: customer.numbers[0].payment,
+  //     numbers: customer.numbers.map(num=>num.paymentId)}
+  //   paymentMutation.mutate(payload)
+  // }
 
   return (
     <div
@@ -140,24 +165,23 @@ const Card = ({ customer, tableId, tableIsOpen }) => {
     >
       <div className=" w-3/12 border-r border-slate-200">
         <div>{customer.customerName}</div>
-        {edit && (
+        {/* {edit && (
           <button 
-          className={`${customer.number[0].payment ? 'text-green-500' : 'text-red-500'}`}
+          className={`${customer.numbers[0].payment ? 'text-green-500' : 'text-red-500'}`}
             onClick={onClickPayment}>
             <TbCurrencyBaht size={24} 
-            // color="green"
              />
           </button>
-        )}
+        )} */}
       </div>
       <div className="flex flex-wrap w-8/12 px-2 border-r border-slate-200">
-        {customer.number.map((n, i) => (
-          <div key={n.numberId} className="mr-2">
+        {customer.numbers.map((n) => (
+          <div key={n.paymentId} className="mr-2">
             {edit ? (
               <>
                 <input
                   type={"checkbox"}
-                  id={n.numberId}
+                  id={n.paymentId}
                   onChange={(e) => onChangeCheckbox(n, e)}
                 />
                 <label htmlFor={n.numberId}

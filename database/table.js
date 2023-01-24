@@ -6,31 +6,33 @@ import mongoose from "mongoose";
 export async function postTable(req, res){
   try{
     const {tableName, tableDetail, tablePrice, tableDate} = req.body
-    console.log(req.body)
+    console.log("from postTable", req.body)
     await connectDB()
-    const tableNumber = []
+    const tableNumbers = []
     for(let i = 0; i <= 9; i++){
       for(let n = 0; n <=9; n++){
         const number = i.toString() + n.toString()
-        tableNumber.push({number})
+        tableNumbers.push({number})
       }
     }
     const result = await Table.create({
-      tableName, tableDetail, tablePrice, tableDate, tableNumber
+      tableName, tableDetail, tablePrice, tableDate, tableNumbers
     })
     res.status(201).json({message: 'create success'})
   }
   catch(error){
+    console.log(error)
     res.status(400).json(error)
   }
 }
 
 export async function getTables(req, res){
+  console.log('from getTables')
   try{
     await connectDB()
     const tables = await Table.find()
-      .select('tableName tableDetail tablePrice tableDate')
-      .sort('-tableDate')
+      .select('tableName tableDetail tablePrice tableDate tableIsOpen')
+      .sort('-tableDate -tableIsOpen')
     res.status(200).json(tables)
   }
   catch(error){
@@ -40,12 +42,18 @@ export async function getTables(req, res){
 
 export async function getTable(req, res){
   try{
+    console.log('from getTable ', req.query)
     const {tableId} = req.query
     await connectDB()
     const table = await Table.findById(tableId)
       .populate({
-        path: "tableNumber",
-        populate: {path: 'customer'}
+        path: "tableNumbers",
+        populate: ({
+          path: 'customers',
+          populate: ({
+            path: 'customer'
+          })
+        })
     })
     res.status(200).json(table)
   }
@@ -58,32 +66,42 @@ export async function putNumber(req, res){
   console.log(req.body)
   try{
     const {tableId, numberId, customer} = req.body
-    console.log(req.body)
     await connectDB()
     const customerId = mongoose.Types.ObjectId.isValid(customer)
       ? customer
       : await Customer.create({customerName: customer}).then(res=>res._id)
     console.log(customerId)
+
+    //check customer exist
+    const table = await Table.findById(tableId)
+    const number = table.tableNumbers.find(n => n._id == numberId)
+    const customerExist = number.customers.find(c => c.customer._id == customerId)
+    if (customerExist) {
+      res.status(400).json({message: 'customer is Exist'})
+      return
+    }
+
+
     const result = await Table.updateOne(
-      {_id: tableId, 'tableNumber._id': numberId},
-      {"$set":{"tableNumber.$.customer": customerId}}
+      {_id: tableId, 'tableNumbers._id': numberId},
+      {"$push": {'tableNumbers.$.customers': {customer: customerId}}}
     )
     res.status(201).json({message: 'create success'})
   }
   catch(error){
+    console.log(error)
     res.status(400).json(error)
   }
 }
 
 export async function putNumberRemoveCustomer(req, res){
-  console.log(req.body)
+  console.log('from putNumberRemoveCustomer ', req.body)
   try{
     const {tableId, numbers, customerId} = req.body
     await connectDB()
-    const result = await Table.update(
-      {},
-      {$unset: {"tableNumber.$[tableNumber].customer": 1}},
-      {arrayFilters: [{"tableNumber._id": {$in: numbers}}]}
+    const result = await Table.updateMany(
+      {  "_id" : tableId },      
+      { $pull: {'tableNumbers.$[].customers' : {'_id': {$in: numbers}}}},
     )   
     console.log(result)
     res.status(201).json({message: 'update success'})
@@ -95,14 +113,14 @@ export async function putNumberRemoveCustomer(req, res){
 }
 
 export async function putNumberPayment(req, res){
-  console.log(req.body)
+  console.log('from putNumberPayment ', req.body)
   try{
     const {numbers, paymentStatus} = req.body
     await connectDB()
     const result = await Table.update(
       {},
-      {$set: {"tableNumber.$[tableNumber].payment": !paymentStatus}},
-      {arrayFilters: [{"tableNumber._id": {$in: numbers}}]}
+      {$set: {"tableNumbers.$[].customers.$[customers].payment": !paymentStatus}},
+      {arrayFilters: [{"customers._id": {$in: numbers}}]}
     )
     console.log(result)
     res.status(201).json({message: 'update success'})

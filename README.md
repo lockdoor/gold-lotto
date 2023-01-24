@@ -36,3 +36,27 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+
+## Version History
+version 1.001
+-customers page
+-tables page
+-table page
+--table settings
+---setting tableName
+---setting tableDetail
+---setting tablePrice
+---setting tableDate
+---setting tableEmoji
+---setting tableIsOpen
+---setting delete table
+--tableNumber => on click number put customer to it
+--tableCustomer => show customer buy lotto number
+
+version 1.1.0
+-customers page => can edit or delete customer
+-tables page => can show table is close
+-table page
+--tableNumber => can add more customer to it, and do not duplicate customer in each number
+--tableNumber => can change color of number and border
+--tableNumberCustomer => show numbers with customers buy it

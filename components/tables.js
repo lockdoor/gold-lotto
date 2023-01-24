@@ -12,7 +12,13 @@ export default function Tables() {
     <>
       {data.map((table) => (
         <Link href={`/tables/${table._id}`} key={table._id}>
-          <div className="border border-pink-300 shadow-xl my-5 rounded-lg p-5 hover:bg-pink-300 hover:text-white">
+          <div
+            className={
+              table.tableIsOpen
+                ? "border border-pink-300 shadow-xl my-5 rounded-lg p-5 hover:bg-pink-300 hover:text-white"
+                : "border border-gray-300 shadow-xl my-5 rounded-lg p-5 hover:bg-gray-300 text-gray-300 hover:text-white"
+            }
+          >
             <div>ชื่อตาราง : {table.tableName}</div>
             <div>รายละเอียด: {table.tableDetail}</div>
             <div>ราคา : {table.tablePrice}</div>
