@@ -15,6 +15,11 @@ import Modal from "@/components/modal";
 import EmojiPicker from "emoji-picker-react";
 import "react-modern-drawer/dist/index.css";
 import { useRouter } from "next/router";
+import { SwatchesPicker } from "react-color"
+import {BsCalendar3} from 'react-icons/bs'
+import {TbCurrencyBaht, TbTable} from 'react-icons/tb'
+import {BiMessageDetail} from 'react-icons/bi'
+import {RiDeleteBin2Line} from 'react-icons/ri'
 
 export default function Table({ tableId }) {
   const rounter = useRouter();
@@ -32,6 +37,8 @@ export default function Table({ tableId }) {
     useState(false);
   const [showModalSettingTableEmoji, setShowModalSettingTableEmoji] =
     useState(false);
+  const [showModalSettingTableNumberColor, setShowModalSettingTableNumberColor] = useState(false)
+  const [showModalSettingTableBorderColor, setShowModalSettingTableBorderColor] = useState(false)
   const queryClient = useQueryClient();
   const putSettingTableMutation = useMutation(putSettingTable, {
     onSuccess: (response) => {
@@ -41,6 +48,8 @@ export default function Table({ tableId }) {
       setShowModalSettingTablePrice(false);
       setShowModalSettingTableDate(false);
       setShowModalSettingTableEmoji(false);
+      setShowModalSettingTableNumberColor(false);
+      setShowModalSettingTableBorderColor(false);
     },
   });
   const deleteSettingTableMutation = useMutation(deleteSettingTable, {
@@ -83,6 +92,14 @@ export default function Table({ tableId }) {
     if (data.tableIsOpen) return;
     deleteSettingTableMutation.mutate({ tableId });
   };
+  const onClickSettingTableNumberColor = () => {
+    setDrawerState(false)
+    setShowModalSettingTableNumberColor(true)
+  }
+  const onClickSettingTableBorderColor = () => {
+    setDrawerState(false)
+    setShowModalSettingTableBorderColor(true)
+  }
   const onClickSubmitSetting = (obj) => {
     const key = Object.keys(obj)[0];
     console.log(key);
@@ -140,23 +157,27 @@ export default function Table({ tableId }) {
           <div className="text-2xl bg-pink-300 p-2 rounded-lg text-center text-gray-500">
             ตั้งค่าตาราง
           </div>
-          <div className="setting-table-item" onClick={onClickSettingTableName}>
-            ชื่อตาราง
+          <div className="setting-table-item  flex justify-between items-center" onClick={onClickSettingTableName}>
+            <div>ชื่อตาราง</div>
+            <div><TbTable color="DeepSkyBlue" size={24}/></div>
           </div>
           <div
-            className="setting-table-item"
+            className="setting-table-item flex justify-between items-center"
             onClick={onClickSettingTableDetail}
           >
-            รายละเอียด
+            <div>รายละเอียด</div>
+            <div><BiMessageDetail color="DeepSkyBlue" size={24}/></div>
           </div>
           <div
-            className="setting-table-item"
+            className="setting-table-item flex justify-between items-center"
             onClick={onClickSettingTablePrice}
           >
-            ราคา
+            <div>ราคา</div>
+            <div><TbCurrencyBaht color="DeepSkyBlue" size={24}/></div>
           </div>
-          <div className="setting-table-item" onClick={onClickSettingTableDate}>
-            งวยหวย
+          <div className="setting-table-item flex justify-between items-center" onClick={onClickSettingTableDate}>
+            <div>งวยหวย</div>
+            <div><BsCalendar3 color="DeepSkyBlue"/></div>
           </div>
           <div
             className="setting-table-item flex justify-between"
@@ -164,6 +185,14 @@ export default function Table({ tableId }) {
           >
             <div>อิโมจิ</div>
             <div>{data.tableEmoji}</div>
+          </div>
+          <div className="setting-table-item flex justify-between" onClick={onClickSettingTableNumberColor}>
+            <div>เปลี่ยนสีตัวเลข</div>
+            <div className=" w-7 h-7 rounded-full aspect-square" style={{backgroundColor: data.tableNumberColor}}></div>
+          </div>
+          <div className="setting-table-item flex justify-between" onClick={onClickSettingTableBorderColor}>
+            <div>เปลี่ยนสีตาราง</div>
+            <div className=" w-7 h-7 rounded-full aspect-square" style={{backgroundColor: data.tableBorderColor}}></div>
           </div>
           <div className="setting-table-item flex justify-between">
             {data.tableIsOpen ? <span>เปิดตาราง</span> : <span>ปิดตาราง</span>}
@@ -179,10 +208,11 @@ export default function Table({ tableId }) {
             </label>
           </div>
           <div
-            className="setting-table-item"
+            className="setting-table-item flex justify-between items-center"
             onClick={onClickSettingTableDelete}
           >
-            ลบตาราง
+            <div>ลบตาราง</div>
+            <div><RiDeleteBin2Line color="red" size={24}/></div>
           </div>
         </div>
       </Drawer>
@@ -219,6 +249,16 @@ export default function Table({ tableId }) {
       >
         <ContentSettingTableEmoji data={data} onSubmit={onClickSubmitSetting} />
       </Modal>
+      <Modal isOpen={showModalSettingTableNumberColor}
+        onClose={setShowModalSettingTableNumberColor}
+      >
+        <ContentSettingTableColor onSubmit={onClickSubmitSetting} field={'tableNumberColor'}/>
+      </Modal>
+      <Modal isOpen={showModalSettingTableBorderColor}
+        onClose={setShowModalSettingTableBorderColor}
+      >
+        <ContentSettingTableColor onSubmit={onClickSubmitSetting} field={'tableBorderColor'}/>
+      </Modal>
     </Layout>
   );
 }
@@ -226,7 +266,7 @@ export default function Table({ tableId }) {
 const ContentSettingTableName = ({ data, onSubmit }) => {
   const [tableName, setTableName] = useState(data.tableName);
   return (
-    <div>
+    <div className="w-72">
       <div className=" bg-pink-300 p-2 text-2xl rounded-md text-gray-500 text-center">
         ชื่อตาราง
       </div>
@@ -246,12 +286,13 @@ const ContentSettingTableName = ({ data, onSubmit }) => {
 const ContentSettingTableDetail = ({ data, onSubmit }) => {
   const [tableDetail, setTableDetail] = useState(data.tableDetail);
   return (
-    <div>
+    <div className="w-72">
       <div className=" bg-pink-300 p-2 text-2xl rounded-md text-gray-500 text-center">
         รายละเอียด
       </div>
       <textarea
         className="user-input"
+        rows={5}
         type={"text"}
         value={tableDetail}
         onChange={(e) => setTableDetail(e.target.value)}
@@ -315,6 +356,20 @@ const ContentSettingTableEmoji = ({ data, onSubmit }) => {
     </div>
   );
 };
+
+const ContentSettingTableColor = ({onSubmit, field}) => {
+  const onChangeComplete = (color, event) => {
+    const payload = {}
+    payload[field] = color.hex
+    onSubmit(payload)
+  }  
+  return (
+    <SwatchesPicker     
+      height={"560px"}
+      onChangeComplete={onChangeComplete}
+    />  
+  )
+}
 
 export async function getServerSideProps(context) {
   const tableId = context.query.tableId;

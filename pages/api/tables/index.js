@@ -8,12 +8,6 @@ export default async function handler(req, res){
     case 'GET': 
       getTables(req, res)
       break
-    // case 'PUT': 
-    //   putBet(req, res)
-    //   break
-    // case 'DELETE': 
-    //   deleteBet(req, res)
-    //   break
     default:
       res.setHeader('Allow', ['POST', 'GET'])
       // res.setHeader('Allow', ['GET', 'POST', 'PUT', 'DELETE'])

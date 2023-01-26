@@ -60,3 +60,5 @@ version 1.1.0
 --tableNumber => can add more customer to it, and do not duplicate customer in each number
 --tableNumber => can change color of number and border
 --tableNumberCustomer => show numbers with customers buy it
+*navbar => user can signOut and edit password
+

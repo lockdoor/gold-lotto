@@ -3,10 +3,8 @@ import React, { useEffect, useState } from 'react'
 export default function TableNumbersCustomers({data, setCountNumber}) {
   const [numbers, setNumbers] = useState([])
   const init = () => {
-    // console.log(data)
     const {tableNumbers} = data
     const numbers = tableNumbers.filter(n => n.customers.length > 0)
-    // console.log(numbers)
     setCountNumber(numbers.length)
     return numbers
   }
@@ -14,7 +12,7 @@ export default function TableNumbersCustomers({data, setCountNumber}) {
     setNumbers(init())
   }, [data])
   return (
-    <div className='my-5'>
+    <div className='my-5 max-w-sm mx-auto'>
       {numbers.map(n => (
         <div key={n._id} className="flex shadow-xl items-center border border-slate-200 my-2 py-3 px-2 rounded-md">
           <div className=" w-3/12 border-r border-slate-200">

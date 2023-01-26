@@ -2,18 +2,9 @@ import { putNumberPayment } from "@/database/table"
 
 export default async function handler(req, res){
   switch(req.method){
-    // case 'POST': 
-    //   postTable(req, res)
-    //   break
-    // case 'GET': 
-    //   getTables(req, res)
-    //   break
     case 'PUT': 
       putNumberPayment(req, res)
       break
-    // case 'DELETE': 
-    //   deleteBet(req, res)
-    //   break
     default:
       res.setHeader('Allow', ['PUT'])
       // res.setHeader('Allow', ['GET', 'POST', 'PUT', 'DELETE'])

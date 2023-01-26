@@ -1,20 +1,17 @@
 import React, { useEffect, useState, useRef } from "react";
 import { BsTrash } from "react-icons/bs";
-import { TbCurrencyBaht } from "react-icons/tb";
 import { CiEdit } from "react-icons/ci";
-import { AiOutlineConsoleSql, AiOutlineRollback } from "react-icons/ai";
+import { AiOutlineRollback } from "react-icons/ai";
 import { useQueryClient, useMutation } from "react-query";
 import { putNumberRemoveCustomer, putNumberPayment } from "@/clientRequest/numberTable";
 import { getTable } from "@/clientRequest/tables";
 
 export default function TableCustomer({ data, setCountCustomer }) {
-  // console.log(data)
   const [tableCustomer, setTableCustomer] = useState([]);
 
   const makeTableCustomer = () => {
-    const { tableNumbers, _id } = data;
+    const { tableNumbers } = data;
     let reserve = tableNumbers.filter((n) => n.customers.length > 0);
-    // console.log(reserve)
     
     // 1. หารายชื่อลูกค้าทั้งหมด
     let customers = []
@@ -27,7 +24,6 @@ export default function TableCustomer({ data, setCountCustomer }) {
     // 2. สร้าง set customers
     customers = new Set(customers);
     setCountCustomer(customers.size)
-    // console.log(customers.size)
 
     // 3. ใช้ customer loop หาตัวเลข
     let result = [];
@@ -55,19 +51,16 @@ export default function TableCustomer({ data, setCountCustomer }) {
     }
 
     result.sort((a, b) => b.numbers.length - a.numbers.length)
-    // console.log(result)
     return result;
   };
 
   useEffect(() => {
     setTableCustomer(makeTableCustomer());
-    // makeTableCustomer()
   }, [data]);
 
   return (
-    <div className="my-5">
+    <div className="my-5 max-w-sm mx-auto">
       {tableCustomer.map((e, i) => (
-        // <div key={i}>{e.customerName}</div>
         <Card key={i} customer={e} tableId={data._id} tableIsOpen={data.tableIsOpen}/>
       ))}
     </div>
@@ -95,7 +88,6 @@ function useOutsideAlerter(ref, setEdit) {
 }
 
 const Card = ({ customer, tableId, tableIsOpen }) => {
-  // console.log(customer)
   const [edit, setEdit] = useState(false);
   const [selectNumber, setSelectNumber] = useState([]);
   const queryClient = useQueryClient()
@@ -120,7 +112,6 @@ const Card = ({ customer, tableId, tableIsOpen }) => {
   const onClickEdit = () => {
     if(!tableIsOpen) return
     setEdit(true)
-    // console.log(customer)
   }
   const onClickCancel = () => {
     setEdit(false)
@@ -128,7 +119,6 @@ const Card = ({ customer, tableId, tableIsOpen }) => {
   }
 
   const onChangeCheckbox = (number, e) => {
-    // console.log(number)
     if (e.target.checked) {
       setSelectNumber(prev => ([...prev, number]))
     } else {
@@ -147,16 +137,7 @@ const Card = ({ customer, tableId, tableIsOpen }) => {
       numbers: selectNumber.map(n=> n.paymentId)
     }
     deleteMution.mutate(payload)
-    // console.log(payload)
   }
-
-  // const onClickPayment = () => {
-  //   console.log(customer.numbers)
-  //   const payload = {
-  //     paymentStatus: customer.numbers[0].payment,
-  //     numbers: customer.numbers.map(num=>num.paymentId)}
-  //   paymentMutation.mutate(payload)
-  // }
 
   return (
     <div
@@ -165,14 +146,6 @@ const Card = ({ customer, tableId, tableIsOpen }) => {
     >
       <div className=" w-3/12 border-r border-slate-200">
         <div>{customer.customerName}</div>
-        {/* {edit && (
-          <button 
-          className={`${customer.numbers[0].payment ? 'text-green-500' : 'text-red-500'}`}
-            onClick={onClickPayment}>
-            <TbCurrencyBaht size={24} 
-             />
-          </button>
-        )} */}
       </div>
       <div className="flex flex-wrap w-8/12 px-2 border-r border-slate-200">
         {customer.numbers.map((n) => (

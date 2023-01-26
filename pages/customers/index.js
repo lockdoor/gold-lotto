@@ -41,14 +41,13 @@ export default function CustomersIndex() {
   const onClickCustomerName = (customer) => {
     setSelectCustomer(customer)
     setShowModal(true)
-    // console.log(customer)
   }
   if (isLoading) return <div>Customers is Loading</div>;
   if (isError) return <div>Customers Got Error {error}</div>;
-  // console.log(data);
+
   return (
     <Layout page={"customers"}>
-      <main>
+      <main className=" max-w-sm mx-auto">
         {data.map((customer) => (
           <div
             key={customer._id}

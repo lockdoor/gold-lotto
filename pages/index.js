@@ -2,6 +2,9 @@ import React, { useState } from "react"
 import { validateInputText } from "@/lib/helper";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/router";
+import Head from "next/head";
+import Image from "next/image";
+import logo from '@/public/logo-no-background.svg'
 
 export default function Home() {
 
@@ -31,7 +34,7 @@ export default function Home() {
       });
       if (!result.error) {        
         setErrorMessage(null);
-        router.replace("/dashboard")
+        router.replace("/tables")
         
       } else {
         setErrorMessage(result.error);
@@ -40,10 +43,15 @@ export default function Home() {
   };
   return (
     <div className=" container h-screen ">
+      <Head>
+        <title>Gold Lotto</title>
+      </Head>
+      
       <form 
         onSubmit={onSubmitHandler}
-        className=" absolute top-1/3 left-1/2 -translate-x-1/2 -traslate-y-1/2 w-96 py-5 px-5 border border-pink-300 rounded-md shadow-xl">
-        <div className="text-center font-bold text-2xl ">เข้าสู่ระบบ</div>
+        className=" absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 py-5 px-5 border border-pink-300 rounded-md shadow-xl">
+        <Image src={logo} alt="LOGO" className="mb-5"/>
+        {/* <div className="text-center font-bold text-2xl ">เข้าสู่ระบบ</div> */}
         {errorMessage && <div>{errorMessage}</div>}
         <label htmlFor="username">ชื่อผู้ใช้ : </label>
         <input

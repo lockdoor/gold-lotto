@@ -5,8 +5,6 @@ import { getTable } from "@/clientRequest/tables";
 import { putNumber } from "@/clientRequest/numberTable";
 
 export default function AutoComplete({ number, tableId, setShowModal }) {
-  // console.log({number, tableId})
-  // console.log(number);
   const [showAuto, setShowAuto] = useState(false);
   const [showAdd, setShowAdd] = useState(false);
   const [autoC, setAutoC] = useState([]);
@@ -71,9 +69,7 @@ export default function AutoComplete({ number, tableId, setShowModal }) {
       setShowAdd(false);
       setShowAuto(true);
     }
-    // console.log(auto);
   };
-  // console.log(data)
   return (
     <div>
       <div className="text-2xl text-center">{number.number}</div>

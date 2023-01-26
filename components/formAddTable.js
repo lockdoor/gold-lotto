@@ -1,4 +1,4 @@
-import React, { use, useState } from "react";
+import React, { useState } from "react";
 import { useQueryClient, useMutation } from "react-query";
 import { postTable, getTables } from "@/clientRequest/tables";
 

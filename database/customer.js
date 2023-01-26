@@ -15,7 +15,6 @@ export async function getCustomers(req, res) {
 export async function getCustomersTables(req, res) {
   //code from https://stackoverflow.com/questions/60217565/lookup-and-aggregate-multiple-levels-of-subdocument-in-mongodb
   try {
-    // const {customerName} = req.body
     console.log("from getCustomersTables");
     await connectDB();
     const customers = await Customer.aggregate([
@@ -77,7 +76,6 @@ export async function getCustomersTables(req, res) {
         },
       },
     ]);
-    // console.log(customers)
     res.status(200).json(customers);
   } catch (error) {
     console.log(error);

@@ -10,7 +10,6 @@ export default function TableNumber({ data }) {
     setNumber(num);
     setShowModal(true);
   };
-  console.log(data)
 
   return (
     <div className="grid grid-cols-10 max-w-sm mx-auto">
@@ -19,6 +18,7 @@ export default function TableNumber({ data }) {
           key={num._id}
           onClick={() => onClickSelectNumber(num)}
           className={`border border-[${data.tableBorderColor}] aspect-square flex justify-center items-center text-[${data.tableNumberColor}] cursor-pointer`}
+          style={{borderColor: data.tableBorderColor, color: data.tableNumberColor}}
         >
           {num.customers.length > 0 ? <span>{data.tableEmoji}</span> : <span>{num.number}</span>}
           

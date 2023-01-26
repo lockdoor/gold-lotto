@@ -7,7 +7,6 @@ export default function Tables() {
   const { isLoading, isError, data, error } = useQuery("getTables", getTables);
   if (isLoading) return <div>Tables is Loading</div>;
   if (isError) return <div>Tables Got Error {error}</div>;
-  // console.log(data)
   return (
     <>
       {data.map((table) => (

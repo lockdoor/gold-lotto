@@ -6,7 +6,7 @@ import Tables from "@/components/tables";
 export default function TablesIndex() {
   return (
     <Layout page={"tables"}>
-      <main>
+      <main className=" max-w-sm mx-auto">
         <FormAddTable />
         <Tables />
       </main>
