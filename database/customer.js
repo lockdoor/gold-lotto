@@ -57,7 +57,7 @@ export async function getCustomersTables(req, res) {
               $group: {
                 _id: {
                   _id: "$_id",
-                  tableName: "$tableName",
+                  tableEmoji: "$tableEmoji",
                   tablePrice: "$tablePrice",
                 },
                 numbers: {

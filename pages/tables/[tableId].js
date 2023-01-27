@@ -103,7 +103,7 @@ export default function Table({ tableId }) {
   const onClickSubmitSetting = (obj) => {
     const key = Object.keys(obj)[0];
     console.log(key);
-    if (data[key] == obj[key]) {
+    if (data[key] == obj[key] || obj[key] === '') {
       console.log("ไม่มีการเปลี่ยนแปลง");
       return;
     } else {

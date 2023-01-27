@@ -145,7 +145,7 @@ const Card = ({ customer, tableId, tableIsOpen }) => {
       className="flex shadow-xl items-center border border-slate-200 my-2 py-3 px-2 rounded-md"
     >
       <div className=" w-3/12 border-r border-slate-200">
-        <div>{customer.customerName}</div>
+        <div className=" truncate">{customer.customerName}</div>
       </div>
       <div className="flex flex-wrap w-8/12 px-2 border-r border-slate-200">
         {customer.numbers.map((n) => (
