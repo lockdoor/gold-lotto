@@ -53,9 +53,10 @@ export default function AutoComplete({ number, tableId, setShowModal }) {
 
   const onChangeHandler = (e) => {
     setInputValue(e);
-
+    console.log(e.toLowerCase())
     const regex = new RegExp(e.toLowerCase(), "g");
-    const auto = data.filter((d) => regex.test(d.customerName));
+    const auto = data.filter((d) => regex.test(d.customerName.toLowerCase()));
+    console.log(auto)
     if (e === "") {
       setAutoC([]);
       setShowAdd(false);
