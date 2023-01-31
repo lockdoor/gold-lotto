@@ -38,7 +38,7 @@ export async function putSettingTable(payload){
 
 export async function deleteSettingTable(payload){
   const {tableId, } = payload
-  console.log(payload)
+  // console.log(payload)
   const result = await axios
     .delete(`${BASE_URL}/${tableId}`, {data: payload})
     .then((res) => res.data)

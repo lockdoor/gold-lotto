@@ -1,4 +1,5 @@
 import React, { useRef, useEffect } from "react";
+import Loading from "./loading";
 
 function useOutsideAlerter(ref, setShow) {
   useEffect(() => {
@@ -20,19 +21,20 @@ function useOutsideAlerter(ref, setShow) {
   }, [ref]);
 }
 
-export default function Modal({ isOpen, onClose, children }) {
+export default function Modal({ isOpen, onClose, children, loading=false, loadingSize=100 }) {
   const wrapperRef = useRef(null);
+  const load = useRef(null);
   useOutsideAlerter(wrapperRef, onClose);
-
   return (
     <>
       {isOpen ? (
         <div className=" fixed top-0 left-0 bg-slate-400 bg-opacity-50 w-full h-screen">
           <div
-            ref={wrapperRef}
+            ref={loading ? load : wrapperRef}
             className=" fixed w-auto top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 shadow-xl py-3 px-5 rounded-md bg-gray-50 opacity-100"
           >
-            {children}
+            
+            {loading ?<Loading  size={loadingSize}/> :<>{children}</>}
           </div>
         </div>
       ) : (

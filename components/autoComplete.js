@@ -3,6 +3,7 @@ import { useQuery, useQueryClient, useMutation } from "react-query";
 import { getCustomers } from "@/clientRequest/customers";
 import { getTable } from "@/clientRequest/tables";
 import { putNumber } from "@/clientRequest/numberTable";
+import Loading from "./loading";
 
 export default function AutoComplete({ number, tableId, setShowModal }) {
   const [showAuto, setShowAuto] = useState(false);
@@ -31,8 +32,9 @@ export default function AutoComplete({ number, tableId, setShowModal }) {
       }
     },
   });
-  if (isLoading) return <div>Customers is Loading</div>;
+  if (isLoading) return <div><Loading size={100}/></div>;
   if (isError) return <div>Customers Got Error {error}</div>;
+  if (putMutation.isLoading) return <Loading size={100}/>
 
   const updateNumberNewCustomer = () => {
     const payload = {
@@ -54,9 +56,14 @@ export default function AutoComplete({ number, tableId, setShowModal }) {
   const onChangeHandler = (e) => {
     setInputValue(e);
     console.log(e.toLowerCase())
-    const regex = new RegExp(e.toLowerCase(), "g");
-    const auto = data.filter((d) => regex.test(d.customerName.toLowerCase()));
-    console.log(auto)
+    const char = e.toLowerCase()
+    const fristRegex = new RegExp(`^${char}`);
+    // const regex = new RegExp(`(?!^${char})${char}`);
+    const regex = new RegExp(`(?=^[^${char}])(?=.*${char})`);
+    const firstMatch = data.filter((d) => fristRegex.test(d.customerName.toLowerCase()));
+    const match = data.filter((d) => regex.test(d.customerName.toLowerCase()));
+    const auto = [...firstMatch, ...match].slice(0, 5)
+    // console.log(auto)
     if (e === "") {
       setAutoC([]);
       setShowAdd(false);
@@ -88,6 +95,7 @@ export default function AutoComplete({ number, tableId, setShowModal }) {
         placeholder="ป้อนชื่อลูกค้า"
         className="block max-w-lg mx-auto border border-gray-300 rounded-lg outline-none focus:border-gray-500 text-lg p-2"
         value={inputValue}
+        autoFocus
         onChange={(e) => onChangeHandler(e.target.value)}
       />
       {showAdd && (

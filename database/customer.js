@@ -71,10 +71,29 @@ export async function getCustomersTables(req, res) {
                 },
               },
             },
+            {
+              $project: {
+                _id: '$_id',
+                numbers: '$numbers',
+                price: {$multiply: [{$size: '$numbers'}, '$_id.tablePrice']}
+              }
+            }
+
           ],
           as: "tables",
         },
       },
+      {
+        $project: {
+          _id: '$_id',
+          customerName: '$customerName',
+          tables: '$tables',
+          totalPrice: {$sum: '$tables.price'}
+        }
+      },
+      {
+        $sort: {'totalPrice': -1}
+      }
     ]);
     res.status(200).json(customers);
   } catch (error) {

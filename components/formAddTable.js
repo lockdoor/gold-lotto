@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import { useQueryClient, useMutation } from "react-query";
 import { postTable, getTables } from "@/clientRequest/tables";
+import Loading from "./loading";
+import { useSession } from "next-auth/react";
 
 export default function FormAddTable() {
+  const session = useSession()
   const [btnAddTable, setBtnAddTable] = useState(true);
   const [tableName, setTableName] = useState("");
   const [tableDetail, setTableDetail] = useState("");
@@ -12,7 +15,8 @@ export default function FormAddTable() {
   const queryClient = useQueryClient()
   const postTableMutation = useMutation(postTable, {
     onSuccess: (response) => {
-      if(response.errors){
+      if(response.hasError){
+        // console.log(response)
         setErrorMessage(response.message)
       }else{
         queryClient.prefetchQuery('getTables', getTables)
@@ -27,11 +31,14 @@ export default function FormAddTable() {
   })
   const onSubmitHandler = (e) => {
     e.preventDefault();
+    const userId = session.data.token._id
     const payload = {
-      tableName, tableDetail, tablePrice, tableDate
+      tableName, tableDetail, tablePrice, tableDate, userId
     }
     postTableMutation.mutate(payload)
+    
   };
+  if(postTableMutation.isLoading) return <Loading size={100}/>
   return (
     <>
       {btnAddTable ? (
@@ -77,6 +84,7 @@ export default function FormAddTable() {
             <input
               id="tablePrice"
               type={"number"}
+              inputMode="numeric"
               className="user-input"
               value={tablePrice}
               required

@@ -5,9 +5,11 @@ import { AiOutlineRollback } from "react-icons/ai";
 import { useQueryClient, useMutation } from "react-query";
 import { putNumberRemoveCustomer, putNumberPayment } from "@/clientRequest/numberTable";
 import { getTable } from "@/clientRequest/tables";
+import Modal from "./modal";
 
 export default function TableCustomer({ data, setCountCustomer }) {
   const [tableCustomer, setTableCustomer] = useState([]);
+  // const [showLoading, setShowLoading] = useState(false)
 
   const makeTableCustomer = () => {
     const { tableNumbers } = data;
@@ -61,7 +63,7 @@ export default function TableCustomer({ data, setCountCustomer }) {
   return (
     <div className="my-5 max-w-sm mx-auto">
       {tableCustomer.map((e, i) => (
-        <Card key={i} customer={e} tableId={data._id} tableIsOpen={data.tableIsOpen}/>
+        <Card key={i} customer={e} tableId={data._id} tableIsOpen={data.tableIsOpen} tablePrice={data.tablePrice}/>
       ))}
     </div>
   );
@@ -87,7 +89,7 @@ function useOutsideAlerter(ref, setEdit) {
   }, [ref]);
 }
 
-const Card = ({ customer, tableId, tableIsOpen }) => {
+const Card = ({ customer, tablePrice, tableId, tableIsOpen }) => {
   const [edit, setEdit] = useState(false);
   const [selectNumber, setSelectNumber] = useState([]);
   const queryClient = useQueryClient()
@@ -106,6 +108,13 @@ const Card = ({ customer, tableId, tableIsOpen }) => {
     }
   })
 
+  const sumPrice = () => {
+    return customer.numbers.length * tablePrice
+  }
+  const checkPaid = () => {
+    const unPaid = customer.numbers.filter(n => !n.payment)
+    return unPaid.length
+  }
   const wrapperRef = useRef(null);
   useOutsideAlerter(wrapperRef, setEdit);
 
@@ -139,6 +148,22 @@ const Card = ({ customer, tableId, tableIsOpen }) => {
     deleteMution.mutate(payload)
   }
 
+  const onClickPayment = () => {
+    const numbers = [];
+    
+      for (const number of customer.numbers) {
+        numbers.push(number);
+      }
+    
+    const payload = {
+      paymentStatus: numbers[0].payment,
+      numbers: numbers.map((num) => num.paymentId),
+    };
+    paymentMutation.mutate(payload);
+
+    // console.log(payload);
+  };
+
   return (
     <div
       ref={wrapperRef}
@@ -146,6 +171,12 @@ const Card = ({ customer, tableId, tableIsOpen }) => {
     >
       <div className=" w-3/12 border-r border-slate-200">
         <div className=" truncate">{customer.customerName}</div>
+        {
+          edit ? <div 
+          onClick={onClickPayment}
+          className="cursor-pointer"
+          style={{color: checkPaid() ? 'red' : 'green'}}>{sumPrice()}</div> : <></>
+        }
       </div>
       <div className="flex flex-wrap w-8/12 px-2 border-r border-slate-200">
         {customer.numbers.map((n) => (
@@ -183,6 +214,8 @@ const Card = ({ customer, tableId, tableIsOpen }) => {
           </button>
         )}
       </div>
+      <Modal isOpen={deleteMution.isLoading} loading={deleteMution.isLoading}></Modal>
+      <Modal isOpen={paymentMutation.isLoading} loading={paymentMutation.isLoading}></Modal>
     </div>
   );
 };

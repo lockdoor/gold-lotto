@@ -54,6 +54,7 @@ version 1.001
 --tableCustomer => show customer buy lotto number
 
 version 1.1.0
+change table model 
 -customers page => can edit or delete customer
 -tables page => can show table is close
 -table page
@@ -62,3 +63,9 @@ version 1.1.0
 --tableNumberCustomer => show numbers with customers buy it
 *navbar => user can signOut and edit password
 
+version 1.2.0
+add loading for page load
+fixed autocompletes
+-table page add amount payment
+limit table to 2 for beginer
+-customer table sorting by total price
