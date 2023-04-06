@@ -12,12 +12,10 @@ export async function postTable(req, res) {
     const user = await User.findById(userId);
     const countTable = await Table.find({}).count();
     if (countTable >= user.tableLimit) {
-      res
-        .status(400)
-        .json({
-          hasError: true,
-          message: `คุณสามารถสร้างได้สูงสุด ${countTable} ตาราง`,
-        });
+      res.status(400).json({
+        hasError: true,
+        message: `คุณสามารถสร้างได้สูงสุด ${countTable} ตาราง`,
+      });
     } else {
       const tableNumbers = [];
       for (let i = 0; i <= 9; i++) {
@@ -54,23 +52,77 @@ export async function getTables(req, res) {
   }
 }
 
+// old function use populate is limit function in vercel
+// export async function getTable(req, res) {
+//   try {
+//     console.log("from getTable ", req.query);
+//     const { tableId } = req.query;
+//     await connectDB();
+//     const table = await Table.findById(tableId).populate({
+//       path: "tableNumbers",
+//       populate: {
+//         path: "customers",
+//         populate: {
+//           path: "customer",
+//         },
+//       },
+//     });
+//     res.status(200).json(table);
+//   } catch (error) {
+//     res.status(400).json(error);
+//   }
+// }
 export async function getTable(req, res) {
   try {
-    console.log("from getTable ", req.query);
     const { tableId } = req.query;
+    console.log("from getTable ", tableId);
     await connectDB();
-    const table = await Table.findById(tableId).populate({
-      path: "tableNumbers",
-      populate: {
-        path: "customers",
-        populate: {
-          path: "customer",
+    const table = await Table.aggregate([
+      { $match: { $expr: { $eq: ["$_id", { $toObjectId: tableId }] } } },
+      { $unwind: "$tableNumbers" },
+      {
+        $lookup: {
+          from: "customers",
+          localField: "tableNumbers.customers.customer",
+          foreignField: "_id",
+          as: "new_cus",
         },
       },
-    });
-    res.status(200).json(table);
+      {
+        $addFields: {
+          tableNumbers: {
+            customers: {
+              $map: {
+                input: '$tableNumbers.customers',
+                as: 'customer',
+                in: {
+                  _id: '$$customer._id',
+                  payment: '$$customer.payment',
+                  customer: '$new_cus'
+                }
+              },
+            },
+          },
+        },
+      },
+      {
+        $group: {
+          _id: "$_id",
+          tableDate: { $first: "$tableDate" },
+          tableName: { $first: "$tableName" },
+          tableDetail: { $first: "$tableDetail" },
+          tablePrice: { $first: "$tablePrice" },
+          tableNumbers: { $push: "$tableNumbers" },
+          tableEmoji: { $first: "$tableEmoji" },
+          tableIsOpen: { $first: "$tableIsOpen" },
+          tableNumberColor: { $first: "$tableNumberColor" },
+          tableBorderColor: { $first: "$tableBorderColor" },
+        },
+      },
+    ]);
+    res.json(table[0]);
   } catch (error) {
-    res.status(400).json(error);
+    res.json(error);
   }
 }
 

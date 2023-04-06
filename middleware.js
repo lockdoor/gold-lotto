@@ -5,6 +5,6 @@ export const config = {
     "/tables/:path*", 
     "/customers/:path*",
     "/api/customers/:path*",
-    "/api/tables/:path*",
+    // "/api/tables/:path*",
     "/api/user"
   ] }

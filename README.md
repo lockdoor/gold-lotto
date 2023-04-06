@@ -69,3 +69,10 @@ fixed autocompletes
 -table page add amount payment
 limit table to 2 for beginer
 -customer table sorting by total price
+
+version 1.2.1
+change api getTable function 
+
+ืnote
+mongodump --uri mongodb+srv://<User>:<Password>@cluster0.nygg0.mongodb.net/<Database> -o <Path>
+mongorestore --uri mongodb+srv://<User>:<Password>@cluster0.nygg0.mongodb.net -d <new Database> <Path>
