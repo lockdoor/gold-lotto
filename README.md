@@ -73,6 +73,10 @@ limit table to 2 for beginer
 version 1.2.1
 change api getTable function 
 
-ืnote
+note
 mongodump --uri mongodb+srv://<User>:<Password>@cluster0.nygg0.mongodb.net/<Database> -o <Path>
 mongorestore --uri mongodb+srv://<User>:<Password>@cluster0.nygg0.mongodb.net -d <new Database> <Path>
+  
+environment variable
+  -NEXTAUTH_SECRET
+  -MONGO_URI
